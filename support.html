@@ -138,16 +138,5 @@
     <p>Ozempic, Wegovy, Mounjaro and Zepbound are trademarks of their respective owners. Holdwell is not affiliated with, sponsored by or endorsed by them.</p>
   </div>
 </footer>
-
-<!--
-Facts in this FAQ and where they come from (checked 2026-10-03).
-- Protein rule: Packages/KeepCore/Sources/KeepCore/ProteinTarget.swift (1.2 base, +0.2 at 50 or older, +0.2 regular training, capped 1.6, clamp 60 to 180 g, round to 5 g;
-  reference weight = goal weight when below current). Override: Features/Settings/SettingsView.swift. Explainer: Features/Protein/ProteinTargetExplanation.swift.
-- Muscle Score weights 45, 35, 20 over 7 days: docs/PLAN.md section 6; explainer on tap in Features/Today/ScoreExplainerView.swift.
-- Dose field filled with the user's own last entry only: Features/Shots/LogDoseView.swift (lastEnteredDose).
-- Medications: Packages/KeepCore/Sources/KeepCore/Medication.swift. Barcode: Features/Protein/BarcodeScannerView.swift (VisionKit, device only, manual entry elsewhere).
-- Restore Purchases and the subscription screen are M4 work. Verify the button label matches "Restore Purchases" when M4 ships.
-- Settings, then About, shows the version: Features/Settings/SettingsView.swift (aboutSection).
--->
 </body>
 </html>
