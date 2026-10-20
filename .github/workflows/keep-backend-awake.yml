@@ -1,0 +1,31 @@
+name: Keep the meal-photo backend awake
+
+# Holdwell's meal-photo function runs on a Supabase free-plan project, which is paused after a week without traffic.
+# Once a day this sends it a tiny image for an account with no subscription. The expected answer is 402: the function,
+# its RevenueCat check and its database all ran, which counts as activity. Any other answer fails the run, and GitHub
+# emails the repository owner, so this doubles as a daily health check.
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call analyze-meal
+        env:
+          URL: https://dbghltxpfnajsisqhtay.supabase.co/functions/v1/analyze-meal
+          IMG: /9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA0JCgsKCA0LCgsODg0PEyAVExISEyccHhcgLikxMC4pLSwzOko+MzZGNywtQFdBRkxOUlNSMj5aYVpQYEpRUk//2wBDAQ4ODhMREyYVFSZPNS01T09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0//wAARCAAIAAgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDWooorxzvP/9k=
+        run: |
+          code=$(curl -s -o body.txt -w '%{http_code}' --max-time 60 -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            --data "{\"image_base64\":\"$IMG\",\"app_user_id\":\"keepalive-daily\"}")
+          echo "HTTP $code"
+          cat body.txt
+          echo
+          test "$code" = "402"
